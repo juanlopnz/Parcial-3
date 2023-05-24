@@ -1,11 +1,15 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const PedidoSchema = Schema({
   fecha: {
     type: Date,
     required: true,
-  }
-},{
+  },
+  socketId: {
+    type: String,
+    required: true,
+  },
+}, {
   toJSON: {
     virtuals: true,
   },

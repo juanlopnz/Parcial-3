@@ -1,19 +1,11 @@
 
-const Coordenada = require('../Models/Pedido');
+const Coordenada = require('../Models/Coordenada');
 
-const enviarCoordenada = async (coordenada) => {
+const guardarCoordenada = async (coordenada) => {
 
   const { x, y, pedido_id } = coordenada;
 
   try{
-    let a = await Coordenada.findOne({x, y});
-    if(a){
-      return {
-        ok: false,
-        msg: 'La coordenada ya existe',
-      };
-    }
-  
     const coordenada = new Coordenada({x, y, pedido_id});
     await coordenada.save();
 
@@ -31,4 +23,4 @@ const enviarCoordenada = async (coordenada) => {
   }
 }
 
-module.exports = { enviarCoordenada };
+module.exports = { guardarCoordenada };

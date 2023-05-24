@@ -1,6 +1,6 @@
-const { crearPedido, seleccionarPedido } = require('../Services/pedido');
-const { enviarCoordenada } = require('../Services/coordenada'); 
-const Pedidos = require('../Models/Pedido');
+const { crearPedido} = require('../Services/pedido');
+const { guardarCoordenada } = require('../Services/coordenada'); 
+const Pedido = require('../Models/Pedido');
 const users = [];
 
 const socketController = (socket, io) => {
@@ -20,6 +20,7 @@ const socketController = (socket, io) => {
 
     crearPedido({
       fecha: new Date(),
+      socketId: socket.id
     })
 
     console.log(users)
@@ -32,18 +33,24 @@ const socketController = (socket, io) => {
 
   socket.on('enviar-coordenada', async ({x, y, pos}) => {
 
-    
-    const pedido = await seleccionarPedido(pos);
-    console.log(pedido)
-    const pedido_id = pedido._id;
+    try{
+      const pedidos = await Pedido.find().exec();
+      console.log(pedidos);
+      const pedido_id = pedidos[pos]._id;
+      console.log(pedido_id);
 
-    if(x && y && pedido_id){
-      console.log('Coordenada recibida: ', x, y, pedido_id);
-      socket.to(pedido_id).emit('recibir-mensaje', {x, y, pedido_id});
-      enviarCoordenada({x, y, pedido_id});
-    }else{
-      //socket.emit('error', {msg: 'Error al enviar la coordenada'});
-      console.log('Error al enviar la coordenada');
+      if(x && y && pedido_id){
+        guardarCoordenada({x, y, pedido_id});
+        io.to( pedidos[pos].socketId ).emit('coordenada-recibida', {x, y, pedido_id}  )
+      }
+      
+
+    }catch(err){
+      console.log(err);
+      return{
+        ok: false,
+        msg: 'Error al seleccionar el pedido',
+      };
     }
   });
 };

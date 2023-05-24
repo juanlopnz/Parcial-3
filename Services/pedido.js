@@ -2,18 +2,11 @@ const Pedido = require('../Models/Pedido');
 
 const crearPedido = async (pedido) => {
 
-  const { _id, fecha } = pedido;
+  const { fecha, socketId } = pedido;
 
   try{
-    let a = await Pedido.findOne({_id});
-    if(a){
-      return {
-        ok: false,
-        msg: 'El pedido ya existe',
-      };
-    }
   
-    const pedido = new Pedido({_id, fecha});
+    const pedido = new Pedido({fecha, socketId});
     await pedido.save();
 
     return {
@@ -30,9 +23,4 @@ const crearPedido = async (pedido) => {
   }
 }
 
-const seleccionarPedido = async (pos) => {
-  const pedido = await Pedido.find();
-  return pedido[pos];
-}
-
-module.exports = { crearPedido, seleccionarPedido };
+module.exports = { crearPedido };
